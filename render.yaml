@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: docmind-ai
+    env: python
+    plan: free
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: gunicorn app:app -c gunicorn.conf.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: GROQ_API_KEY
+        sync: false
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: GROQ_MODEL
+        value: qwen/qwen3.6-27b
+      - key: GROQ_VISION_MODEL
+        value: qwen/qwen3.6-27b
+      - key: EMBEDDING_MODEL
+        value: sentence-transformers/all-MiniLM-L6-v2
+      - key: VISION_ENABLED
+        value: "false"
+      - key: PII_MASKING
+        value: "true"
+      - key: LOG_LEVEL
+        value: WARNING
+      - key: CHUNK_SIZE
+        value: "500"
+      - key: CHUNK_OVERLAP
+        value: "80"
+      - key: TOP_K
+        value: "5"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+      - key: PIP_NO_CACHE_DIR
+        value: "1"

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DocMind AI — Document Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body>
+<div class="bg-fx" aria-hidden="true">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+</div>
+
+<div class="app">
+
+  <!-- ████ SIDEBAR ████ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="logo-text">DocMind<span class="logo-ai">AI</span></span>
+      </div>
+      <button class="ib" id="sbClose">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- New Chat -->
+    <div class="sb-section">
+      <button class="new-chat-btn" id="newChatBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        New Chat
+      </button>
+    </div>
+
+    <!-- Chat History -->
+    <div class="sb-section sb-history-section">
+      <div class="sb-label">Chat History</div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty" id="historyEmpty">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <p>No chats yet</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="sb-section">
+      <div class="sb-label">Knowledge Base</div>
+      <div class="drop-zone" id="dropZone">
+        <div class="dz-inner">
+          <div class="dz-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          </div>
+          <span class="dz-txt">Drop files or <u>browse</u></span>
+          <span class="dz-fmt">PDF · DOCX · XLSX · PPTX · CSV · JSON · TXT · MD</span>
+        </div>
+        <input type="file" id="fileInput" multiple accept=".pdf,.txt,.docx,.doc,.csv,.xlsx,.xls,.pptx,.ppt,.json,.xml,.html,.htm,.md,.markdown,.log,.png,.jpg,.jpeg" hidden/>
+      </div>
+    </div>
+
+    <!-- Docs -->
+    <div class="sb-section sb-docs-section">
+      <div class="sb-docs-head">
+        <span class="sb-label">Indexed Files</span>
+        <span class="fc-badge" id="fileCount">0</span>
+      </div>
+      <div class="doc-list" id="docList">
+        <div class="doc-empty" id="docEmpty">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".35"><path d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          <p>No files yet</p>
+        </div>
+      </div>
+      <div class="chunk-info" id="chunkInfo" style="display:none">
+        <span class="chunk-dot"></span>
+        <span id="totalChunks">0</span> chunks indexed
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="sb-foot">
+      <div class="model-row">
+        <span class="model-live-dot"></span>
+        <div class="model-info">
+          <span class="model-lbl">Active Model</span>
+          <span class="model-nm">llama-3.3-70b</span>
+        </div>
+      </div>
+      <button class="ib theme-btn" id="themeBtn" title="Toggle theme">🌙</button>
+    </div>
+  </aside>
+
+  <!-- ████ MAIN ████ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="tb-l">
+        <button class="ib menu-btn" id="menuBtn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+        <div class="tb-title" id="tbTitle">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <span id="tbTitleTxt">New Chat</span>
+        </div>
+      </div>
+      <div class="tb-r">
+        <div class="status-pill" id="statusPill">
+          <span class="sp-dot" id="spDot"></span>
+          <span id="statusTxt">Ready</span>
+        </div>
+        <button class="tb-btn" id="clearBtn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6m5 4v6m4-6v6M9 6V4h6v2"/></svg>
+          Clear
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat -->
+    <div class="chat" id="chat">
+
+      <!-- Welcome -->
+      <div class="welcome" id="welcome">
+        <div class="wc-wrap">
+          <div class="wc-icon-ring">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <h1 class="wc-h1">DocMind <span class="wc-ai">AI</span></h1>
+          <p class="wc-p">Upload documents and ask anything. I read, learn, and synthesize knowledge from <strong>all your files</strong> to give structured, cited answers.</p>
+          <div class="wc-features">
+            <div class="wf"><span class="wf-ic">🔍</span><div><b>Multi-Doc Search</b><p>Searches all uploaded files simultaneously</p></div></div>
+            <div class="wf"><span class="wf-ic">🧠</span><div><b>Deep Learning</b><p>Understands context, not just keywords</p></div></div>
+            <div class="wf"><span class="wf-ic">📎</span><div><b>Source Citations</b><p>Every answer linked to exact source file</p></div></div>
+            <div class="wf"><span class="wf-ic">⚡</span><div><b>Live Streaming</b><p>Answers appear word by word instantly</p></div></div>
+          </div>
+          <div class="wc-tip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+            Try: <em>"What are exit formalities? And how to make egg fried rice?"</em>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="msgs-wrap" id="msgsWrap" style="display:none">
+        <div class="msgs" id="msgs"></div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="inp-zone">
+      <div class="inp-card" id="inpCard">
+        <textarea class="inp-ta" id="msgInput" rows="1" maxlength="4000"
+          placeholder="Ask anything about your documents… (multiple questions OK!)"></textarea>
+        <div class="inp-footer">
+          <span class="inp-char" id="charCount">0 / 4000</span>
+          <span class="inp-hint">Enter to send · Shift+Enter for new line</span>
+          <button class="inp-send" id="sendBtn" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+      <p class="inp-disclaimer">DocMind AI can make mistakes. Verify important information.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Index Popup -->
+<div class="idx-popup" id="idxPopup" style="display:none">
+  <div class="idx-head">
+    <div class="idx-title"><span class="idx-spin"></span>Indexing Documents</div>
+    <button class="ib" onclick="document.getElementById('idxPopup').style.display='none'">✕</button>
+  </div>
+  <div class="idx-body" id="idxList"></div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal-bg" id="delModal" style="display:none">
+  <div class="modal">
+    <div class="modal-em">🗑️</div>
+    <div class="modal-title">Delete Document?</div>
+    <div class="modal-desc" id="delDesc">This will permanently remove the file and all its indexed chunks.</div>
+    <div class="modal-acts">
+      <button class="btn-cancel" id="delCancel">Cancel</button>
+      <button class="btn-del" id="delOk">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div class="toasts" id="toasts"></div>
+
+<script src="{{ url_for('static', filename='js/marked.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
